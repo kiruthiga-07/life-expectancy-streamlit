@@ -25,6 +25,9 @@ Adult Mortality, Alcohol, GDP, Schooling, HIV/AIDS
 
 df = pd.read_csv("Life Expectancy Data.csv")
 
+# remove extra spaces in column names
+df.columns = df.columns.str.strip()
+
 st.subheader("Dataset Preview")
 st.write(df.head())
 
@@ -40,20 +43,33 @@ st.subheader("Statistics")
 st.write(df.describe())
 
 
-# Select required columns
-df = df[[
+# -----------------------
+# 3. SELECT REQUIRED COLUMNS
+# -----------------------
+
+cols = [
     "Adult Mortality",
     "Alcohol",
     "GDP",
     "Schooling",
     "HIV/AIDS",
     "Life expectancy"
-]]
+]
+
+df = df[cols]
+
+
+# convert to numeric (important)
+for c in cols:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
 
 df = df.dropna()
 
 
+# -----------------------
 # Scatter plot
+# -----------------------
+
 st.subheader("Scatter Plot")
 
 fig = plt.figure()
@@ -65,7 +81,7 @@ st.pyplot(fig)
 
 
 # -----------------------
-# 3. PREPARE DATA
+# 4. PREPARE DATA
 # -----------------------
 
 X = df[[
@@ -88,7 +104,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # -----------------------
-# 4. BUILD MODEL
+# 5. BUILD MODEL
 # -----------------------
 
 model = LinearRegression()
@@ -96,7 +112,7 @@ model.fit(X_train, y_train)
 
 
 # -----------------------
-# 5. EVALUATE MODEL
+# 6. EVALUATE MODEL
 # -----------------------
 
 y_pred = model.predict(X_test)
@@ -111,7 +127,7 @@ st.write("R2 Score:", r2)
 
 
 # -----------------------
-# 6. INTERPRET COEFFICIENTS
+# 7. COEFFICIENTS
 # -----------------------
 
 st.subheader("Model Coefficients")
@@ -125,7 +141,7 @@ st.write(coeff)
 
 
 # -----------------------
-# 7. PLOT ACTUAL VS PREDICTED
+# 8. ACTUAL VS PREDICTED
 # -----------------------
 
 st.subheader("Actual vs Predicted")
@@ -139,7 +155,7 @@ st.pyplot(fig2)
 
 
 # -----------------------
-# 8. USER INPUT PREDICTION
+# 9. USER INPUT
 # -----------------------
 
 st.subheader("Predict Life Expectancy")
@@ -150,10 +166,18 @@ gdp = st.number_input("GDP", 0.0, 100000.0, 5000.0)
 school = st.number_input("Schooling", 0.0, 20.0, 10.0)
 hiv = st.number_input("HIV/AIDS", 0.0, 50.0, 1.0)
 
+
 if st.button("Predict"):
 
-    input_data = np.array(
-        [[adult, alcohol, gdp, school, hiv]]
+    input_data = pd.DataFrame(
+        [[adult, alcohol, gdp, school, hiv]],
+        columns=[
+            "Adult Mortality",
+            "Alcohol",
+            "GDP",
+            "Schooling",
+            "HIV/AIDS"
+        ]
     )
 
     pred = model.predict(input_data)
