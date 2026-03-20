@@ -23,7 +23,7 @@ Adult Mortality, Alcohol, GDP, Schooling, HIV/AIDS
 # 1. LOAD DATA
 # -----------------------
 
-df = pd.read_csv("life_expectancy.csv")
+df = pd.read_csv("Life Expectancy Data.csv")
 
 st.subheader("Dataset Preview")
 st.write(df.head())
